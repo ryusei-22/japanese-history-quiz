@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本史クイズゲーム</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="root" class="min-h-screen flex items-center justify-center p-4"></div>
+
+    <script type="text/babel">
+        const JapaneseHistoryQuiz = () => {
+          const [questions, setQuestions] = React.useState([
+            {
+              id: 1,
+              question: '聖徳太子が制定した「十七条憲法」が制定されたのは何年ですか？',
+              options: ['538年', '593年', '604年', '645年'],
+              answer: '604年',
+              explanation: '聖徳太子は604年に十七条憲法を制定しました。これは日本初の成文法と言われています。'
+            },
+            {
+              id: 2,
+              question: '鎌倉幕府を開いた人物は誰ですか？',
+              options: ['源頼朝', '平清盛', '足利尊氏', '織田信長'],
+              answer: '源頼朝',
+              explanation: '源頼朝は1192年に征夷大将軍に任じられ、鎌倉幕府を開きました。'
+            },
+            {
+              id: 3,
+              question: '室町幕府の3代将軍で、日明貿易を始めた人物は？',
+              options: ['足利義満', '足利義政', '足利尊氏', '足利義持'],
+              answer: '足利義満',
+              explanation: '足利義満は室町幕府の3代将軍で、金閣寺を建立し、1404年に日明貿易を開始しました。'
+            },
+            {
+              id: 4,
+              question: '江戸時代の鎖国政策を完成させた禁令は？',
+              options: ['天下統一令', '鎖国令', '島原の乱', '寛永の鎖国令'],
+              answer: '寛永の鎖国令',
+              explanation: '1639年の寛永の鎖国令によって、ポルトガル船の来航が禁止され、鎖国体制が完成しました。'
+            },
+            {
+              id: 5,
+              question: '明治維新の重要な政策「廃藩置県」が行われたのは何年？',
+              options: ['1868年', '1871年', '1877年', '1889年'],
+              answer: '1871年',
+              explanation: '1871年に廃藩置県が行われ、全国の藩が廃止され、県が設置されました。'
+            }
+          ]);
+          
+          const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+          const [score, setScore] = React.useState(0);
+          const [showAnswer, setShowAnswer] = React.useState(false);
+          const [selectedOption, setSelectedOption] = React.useState('');
+          const [gameOver, setGameOver] = React.useState(false);
+          
+          const handleAnswer = (option) => {
+            setSelectedOption(option);
+            setShowAnswer(true);
+            
+            if (option === questions[currentQuestionIndex].answer) {
+              setScore(score + 1);
+            }
+          };
+          
+          const handleNext = () => {
+            setShowAnswer(false);
+            setSelectedOption('');
+            
+            if (currentQuestionIndex < questions.length - 1) {
+              setCurrentQuestionIndex(currentQuestionIndex + 1);
+            } else {
+              setGameOver(true);
+            }
+          };
+          
+          const restartGame = () => {
+            setCurrentQuestionIndex(0);
+            setScore(0);
+            setShowAnswer(false);
+            setSelectedOption('');
+            setGameOver(false);
+          };
+          
+          return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+              <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+                <h1 className="text-2xl font-bold text-center mb-6 text-indigo-700">日本史クイズゲーム</h1>
+                
+                {!gameOver ? (
+                  <>
+                    <div className="mb-4">
+                      <p className="text-gray-500 text-sm mb-2">問題 {currentQuestionIndex + 1}/{questions.length}</p>
+                      <h2 className="text-lg font-semibold mb-4">{questions[currentQuestionIndex].question}</h2>
+                      
+                      <div className="space-y-2">
+                        {questions[currentQuestionIndex].options.map((option, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleAnswer(option)}
+                            disabled={showAnswer}
+                            className={`w-full p-3 text-left rounded ${
+                              showAnswer && option === questions[currentQuestionIndex].answer
+                                ? 'bg-green-100 border border-green-500'
+                                : showAnswer && option === selectedOption && option !== questions[currentQuestionIndex].answer
+                                ? 'bg-red-100 border border-red-500'
+                                : selectedOption === option
+                                ? 'bg-blue-100 border border-blue-500'
+                                : 'bg-gray-50 border border-gray-300 hover:bg-gray-100'
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      {showAnswer && (
+                        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                          <p className="font-medium text-blue-800">解説:</p>
+                          <p className="text-blue-700">{questions[currentQuestionIndex].explanation}</p>
+                        </div>
+                      )}
+                      
+                      {showAnswer && (
+                        <button
+                          onClick={handleNext}
+                          className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+                        >
+                          {currentQuestionIndex < questions.length - 1 ? '次の問題へ' : '結果を見る'}
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold mb-4">クイズ終了！</h2>
+                    <p className="text-lg mb-4">あなたのスコア: {score}/{questions.length}</p>
+                    <p className="mb-6">
+                      {score === questions.length
+                        ? '完璧です！あなたは日本史マスターです！'
+                        : score >= questions.length * 0.7
+                        ? 'よくできました！あなたの日本史知識はかなりのものです！'
+                        : score >= questions.length * 0.4
+                        ? 'がんばりました！もう少し日本史の勉強をしましょう。'
+                        : 'もう一度チャレンジして、日本史の知識を深めましょう！'}
+                    </p>
+                    <button
+                      onClick={restartGame}
+                      className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+                    >
+                      もう一度プレイする
+                    </button>
+                  </div>
+                )}
+                
+                <div className="mt-4 text-center">
+                  <p className="text-gray-500">現在のスコア: {score}</p>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<JapaneseHistoryQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>
